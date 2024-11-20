@@ -1,0 +1,84 @@
+// ## Display
+#include <LiquidCrystal.h>
+
+
+const int rs = 3, en = 4, d4 = A2, d5 = A3, d6 = A4, d7 = A5;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+float valor_potencia;
+int umidade;//recebe do sensor os valores 
+int motorPin =5;//pino do motor
+int motorState = 1;//estado do motor
+int ledVerde = 10;//led verde
+int ledAmarelo = 9;//led amarela
+int ledVermelho = 8;//led vermelha
+int valorLDR = A1;//valor inicial do LDR 
+float LDR = 0;
+
+void setup() {
+  
+  // Iniciar a tela.
+  lcd.begin(16, 2);//inicia 
+  lcd.print("Iniciando...");
+  delay(1000);
+  lcd.clear();//limpa
+  pinMode(motorPin, OUTPUT);//motor
+  pinMode(ledVerde,OUTPUT);//led verde
+  pinMode(ledAmarelo, OUTPUT);//led amarelo
+  pinMode(ledVermelho, OUTPUT);//led vermelho 
+  pinMode(LDR, INPUT);//sensor de luminosidade
+  
+  
+  
+}
+
+  
+void loop() {
+  
+  umidade=analogRead(A0);
+// define a entrada analogica na porta A0
+  valorLDR = analogRead(A1);
+// define a entrada analogica na entrada A1
+  lcd.begin(16, 2);
+  
+  
+   if (valorLDR > 0 && valorLDR < 100){
+  digitalWrite(ledAmarelo, HIGH);//se a luminosidade for baixa, acende a led
+   }
+  if (valorLDR >= 100){
+    digitalWrite(ledAmarelo, LOW);//se a luminosidade for alta, apaga a led
+    lcd.setCursor(0, 1);
+    lcd.print("Luz insuficiente"); 
+  }
+ 
+  
+  
+  // Imprimir a mensagem na tela.
+  
+  lcd.setCursor(0, 0); // posição que ira imprimir na tela
+  lcd.print("Nivel de Umidade:");
+  //lcd.print("PROJECT");
+  delay(1000);
+  lcd.setCursor(0, 1);//seta a posição do texto
+  if (umidade > 450){//se for maior que 450...
+  lcd.print("Umido - Completa");
+  digitalWrite(motorPin, LOW);//desliga motor
+  digitalWrite(ledVerde, HIGH);//acende a led verde
+  digitalWrite(ledVermelho, LOW);//mantem a led vermelha apagada
+    
+  if (umidade == analogRead(LOW)){
+    digitalWrite(motorPin, LOW);//liga motor
+  }    
+  }else if (umidade < 450){ //se a umidade for menor que 450...
+    lcd.print("Seco - Irrigando");
+    motorState = digitalRead(motorPin);//leitura dos valores no motor 
+    digitalWrite(motorPin, HIGH);//liga motor
+    digitalWrite(ledVermelho, HIGH);//acende a led vermelha
+    digitalWrite(ledVerde, LOW);//mantem a led verde apagada
+  }
+  
+  delay(2000);
+  lcd.clear();//limpa
+  
+  
+
+  }
